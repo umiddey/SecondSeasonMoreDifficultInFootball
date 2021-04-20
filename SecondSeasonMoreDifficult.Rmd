@@ -1,0 +1,105 @@
+---
+title: "Topic2"
+author: "Football Myths Team"
+date: "3/11/2021"
+output: html_document
+---
+
+```{r}
+
+
+# Plot the Data
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(reshape)
+
+
+
+df_cleaner <- function(df) {
+  d1<-data.frame(df[])
+  d2 <- subset(d1, select = -c(1,3, 5, 6, 8, 9, 11, 12, 14, 15))
+  colnames(d2) <- c('Team', 'position.1st.season', 'position.2nd.season', 'position.3rd.season', 'position.4th.season')
+  d2$Team <- make.unique(d2$Team)
+
+  
+  return(d2)
+
+}
+
+buli_graph_plotter <- function(df) {
+  d3 <- df_cleaner(df)
+  lab <- c(sum(is.na(d3$position.2nd.season)),sum(is.na(d3$position.3rd.season)), sum(is.na(d3$position.4th.season)), sum(na.omit(d3$position.4th.season>=16))) 
+  colnames(d3)<-c('Team', 'x1', 'x2', 'x3', 'x4')
+  df_clean <- d3 %>% 
+    gather(season, value, num_range('x', 1:4)) %>%
+    mutate(season = readr::parse_number(season))
+  
+  plots <- ggplot(df_clean, aes(x = season, y = value, colour = Team)) + 
+    geom_line() + ylab('Position in the league') +
+    scale_y_continuous(trans = 'reverse', breaks = 0:20)  +
+    stat_summary(aes( y = value), fun=mean, colour="black", geom="line",group=1, size = 1) +
+    scale_color_manual(values = c(gray.colors(nrow(df)))) + theme(legend.position="none") +
+    geom_hline(yintercept = 16, color = 'Red', linetype = 'dashed', size = 1)+
+    scale_x_continuous(
+      name = "Number of relegated teams",
+      labels = lab,      
+      sec.axis = sec_axis( trans=~.*1, name="Season number")
+    ) 
+  
+  return(plots)
+}
+
+
+graph_plotter <- function(df) {
+  
+  d3 <- df_cleaner(df)
+  lab <- c(sum(is.na(d3$position.2nd.season)),sum(is.na(d3$position.3rd.season)), sum(is.na(d3$position.4th.season)), sum(na.omit(d3$position.4th.season>=18)))
+  
+  colnames(d3)<-c('Team', 'x1', 'x2', 'x3', 'x4')
+  means <- cbind(mean(na.omit(d3$x2)), mean(na.omit(d3$x1)), mean(na.omit(d3$x3)), mean(na.omit(d3$x4))) 
+  df_clean <- d3 %>% 
+    gather(season, value, num_range('x', 1:4)) %>%
+    mutate(season = readr::parse_number(season))
+  
+  plots <- ggplot(df_clean, aes(x = season, y = value, color = Team)) + 
+    geom_line() +  ylab('Position in the league') +  scale_y_continuous(trans = 'reverse', breaks = 0:20) + 
+    stat_summary(aes( y = value), fun=mean, colour="black", geom="line",group=1, size = 1)+
+    scale_color_manual(values = c(gray.colors(nrow(df)))) + theme(legend.position="none") +
+    geom_hline(yintercept = 18, color = 'Red', linetype = 'dashed', size = 1) +
+    scale_x_continuous(
+      name = "Number of relegated teams",
+      labels = lab,      
+      sec.axis = sec_axis( trans=~.*1, name="Season number")
+    ) 
+    
+  return(plots)
+}
+
+
+
+
+# Get Data
+library(readxl)
+buli <- read_excel("D:/TUD/Course materials/Sports Data Visualisation/BuLi/Relegation topic/Daten Aufsteiger Bundesliga.xlsx")
+liga<- read_excel("D:/TUD/Course materials/Sports Data Visualisation/LaLiga/Relegation topic/Daten Aufsteiger La Liga.xlsx")
+seria <- read_excel("D:/TUD/Course materials/Sports Data Visualisation/Serie A/Relegation topic/Serie A Aufsteiger.xlsx")
+seria <- subset(seria, select = -c(7, 11, 15))
+ligue <- read_excel("D:/TUD/Course materials/Sports Data Visualisation/Ligue1/Relegation topic/Ligue 1 Aufsteiger.xlsx")
+ligue <- cbind(1, ligue)
+ligue <- ligue[-c(1:19), ]
+ligue <- subset(ligue, select = -seq(16,20))
+epl <- read_excel("D:/TUD/Course materials/Sports Data Visualisation/EPL/Relegation topic/Daten Aufsteiger EPL.xlsx")
+
+graph_plotter(seria)
+graph_plotter(liga)
+graph_plotter(ligue)
+buli_graph_plotter(buli)
+graph_plotter(epl)
+
+
+
+
+```
+
+The darker line is the mean line for all the newly promoted teams.
