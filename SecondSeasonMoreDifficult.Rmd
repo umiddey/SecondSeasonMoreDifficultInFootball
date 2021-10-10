@@ -1,11 +1,15 @@
 ---
-title: "Topic2"
-author: "Football Myths Team"
+title: "Second Season More Difficult"
+author: "Umid Kumar Dey"
 date: "3/11/2021"
-output: html_document
+output: pdf_document
 ---
 
-```{r}
+This document contains the code for the model that tests whether the saying
+that the second season is the hardest for newly-promoted teams is true or not.
+
+
+```{r setup, warning=FALSE}
 
 
 # Plot the Data
@@ -15,6 +19,8 @@ library(tidyr)
 library(reshape)
 
 
+# The dataset was downloaded from ESPN using a scraper and had to be 
+# cleaned/processed before it could be used. 
 
 df_cleaner <- function(df) {
   d1<-data.frame(df[])
@@ -26,6 +32,11 @@ df_cleaner <- function(df) {
   return(d2)
 
 }
+
+# The graph plotter function plots the progress graph of newly promoted teams.
+# Since Bundesliga has only 18 teams in the league, compared to 20 that the
+# other leagues in the top 5 have, the graph plotter for it is slightly 
+# different.
 
 buli_graph_plotter <- function(df) {
   d3 <- df_cleaner(df)
@@ -81,15 +92,19 @@ graph_plotter <- function(df) {
 
 # Get Data
 library(readxl)
-buli <- read_excel("D:/TUD/Course materials/Sports Data Visualisation/BuLi/Relegation topic/Daten Aufsteiger Bundesliga.xlsx")
-liga<- read_excel("D:/TUD/Course materials/Sports Data Visualisation/LaLiga/Relegation topic/Daten Aufsteiger La Liga.xlsx")
-seria <- read_excel("D:/TUD/Course materials/Sports Data Visualisation/Serie A/Relegation topic/Serie A Aufsteiger.xlsx")
+buli <- read_excel("E:/TUD/Course materials/Sports Data Visualisation/BuLi/Relegation topic/Daten Aufsteiger Bundesliga.xlsx")
+liga<- read_excel("E:/TUD/Course materials/Sports Data Visualisation/LaLiga/Relegation topic/Daten Aufsteiger La Liga.xlsx")
+seria <- read_excel("E:/TUD/Course materials/Sports Data Visualisation/Serie A/Relegation topic/Serie A Aufsteiger.xlsx")
 seria <- subset(seria, select = -c(7, 11, 15))
-ligue <- read_excel("D:/TUD/Course materials/Sports Data Visualisation/Ligue1/Relegation topic/Ligue 1 Aufsteiger.xlsx")
+
+# The dataset for Ligue 1 was slightly differently stored, which is why it had
+# to be edited slightly to fit the data cleaner function
+
+ligue <- read_excel("E:/TUD/Course materials/Sports Data Visualisation/Ligue1/Relegation topic/Ligue 1 Aufsteiger.xlsx")
 ligue <- cbind(1, ligue)
 ligue <- ligue[-c(1:19), ]
 ligue <- subset(ligue, select = -seq(16,20))
-epl <- read_excel("D:/TUD/Course materials/Sports Data Visualisation/EPL/Relegation topic/Daten Aufsteiger EPL.xlsx")
+epl <- read_excel("E:/TUD/Course materials/Sports Data Visualisation/EPL/Relegation topic/Daten Aufsteiger EPL.xlsx")
 
 graph_plotter(seria)
 graph_plotter(liga)
@@ -102,4 +117,6 @@ graph_plotter(epl)
 
 ```
 
-The darker line is the mean line for all the newly promoted teams.
+The darker line is the mean line for all the newly promoted teams. 
+As can be seen from the graphs, second season being harder might truly be a myth
+because in most cases, the first season was the hardest for newly-promoted teams
